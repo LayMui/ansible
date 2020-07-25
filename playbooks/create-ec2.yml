@@ -1,0 +1,13 @@
+---
+- hosts: localhost
+  tasks:
+    - ec2:
+        key_name: default-ec2
+        instance_type: t2.micro
+        image: ami-0adbe59da7d24a349
+        region: ap-southeast-1
+        # To make it declarative by using exact_count
+        exact_count: 2
+        count_tag: {type: http}
+        vpc_subnet_id: subnet-50d6d419
+    

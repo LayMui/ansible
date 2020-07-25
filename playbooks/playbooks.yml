@@ -1,0 +1,4 @@
+- import_playbook: ping.yml
+- import_playbook: shell.yml
+- import_playbook: facts.yml
+- import_playbook: install-http.yml

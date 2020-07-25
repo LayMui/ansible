@@ -1,0 +1,4 @@
+- hosts: aws_ec2
+  tasks: 
+    - debug: msg="Hello Dev"
+  

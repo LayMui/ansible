@@ -120,3 +120,87 @@ ansible -m ping all: to check if we can ping those EC2 servers
 ansible dev -a "python --version" where dev is defined in the ansible.hosts under dev group/section
 
 ansible --list-host \!first -> anything that is not first
+
+playbook
+the syntax is important
+ - debug: msg="Hello"  -> Do not have space 
+ you can have additional play in the same playbook 
+ - hosts:  -> array
+
+first thing is to gather facts and then execute the commands
+ansible-playbook playbooks/ping.yml
+ansible-playbook playbooks/shell.yml
+to get the output using register: 
+
+pass the variable from the commandline:ansible-playbook playbooks/shell.yml -e variable1="LayMui"
+
+or from the variable file
+
+
+ansible qa -m setup
+to gather the facts on the qa group
+
+shortcut: 
+- debug: var=ansible_distribution
+to 
+- name: Distribution
+  debug: msg="{{ ansible_distribution }}"
+
+to install http server
+in the playbook yml: become: true to become the root 
+install httpd to the EC2 instance
+After installing it, we want to run service and execute the raw command
+- service: name=httpd state=started enabled=yes
+- raw: "echo Hello World | sudo tee /var/www/html/index.html"
+Hit the endpoint http://54.254.1.49/ and you will see Hello World on the screen
+
+Use -l to filter
+ansible-playbook -l qa playbooks/playbooks.yml
+
+with conditionals:
+ vars:
+    system: "Linux"
+  #  system: "Windows"
+    color: "Red"
+
+ - debug: var=color
+   when: system == 'Linux'
+
+This mean when system is Windows, print the color=Red
+
+
+with loop:
+- debug: var=item
+      with_items:
+      - item1
+      - item2
+      - item3 
+
+
+    Configure EC2 Dynamic inventory 
+    Run the command
+    ansible-inventory --list
+    ansible-inventory --graph
+   
+
+
+    ansible-playbook  playbooks/dynamic-inventory-ping.yml
+
+How to make your inventory dynamic:
+    ansible-inventory --graph
+    To show us the different groups 
+    |--@arch_x86_64:
+  |  |--ec2-54-254-1-49.ap-southeast-1.compute.amazonaws.com
+  |  |--ec2-54-255-14-89.ap-southeast-1.compute.amazonaws.com
+  |--@aws_ec2:
+  |  |--ec2-54-254-1-49.ap-southeast-1.compute.amazonaws.com
+  |  |--ec2-54-255-14-89.ap-southeast-1.compute.amazonaws.com
+  |--@tag_Env_dev:
+  |  |--ec2-54-254-1-49.ap-southeast-1.compute.amazonaws.com
+  |--@tag_Env_qa:
+  |  |--ec2-54-255-14-89.ap-southeast-1.compute.amazonaws.com
+  |--@ungrouped:
+
+  pip install boto
+  ansible-playbook playbooks/create-ec2.yml
+  ansible-inventory --graph
